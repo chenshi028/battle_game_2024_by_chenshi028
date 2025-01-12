@@ -71,6 +71,9 @@ class Unit : public Object {
    * true, otherwise return false.
    * */
   [[nodiscard]] virtual bool IsHit(glm::vec2 position) const = 0;
+  [[nodiscard]] virtual bool IsInForceField(glm::vec2 position) const {
+    return false;
+  }
 
   template <class BulletType, class... Args>
   void GenerateBullet(glm::vec2 position,

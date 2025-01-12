@@ -2,7 +2,6 @@
 
 #include "battle_game/core/game_core.h"
 #include "battle_game/core/particles/particles.h"
-
 namespace battle_game::bullet {
 CannonBall::CannonBall(GameCore *core,
                        uint32_t id,
@@ -24,13 +23,24 @@ void CannonBall::Render() {
 }
 
 void CannonBall::Update() {
-  position_ += velocity_ * kSecondPerTick;
+  bool decelerate = false;
+  auto &units = game_core_->GetUnits();
+  for (auto &unit : units) {
+    if (unit.second->IsInForceField(position_)) {
+      decelerate = true;
+    }
+  }
+  if (decelerate) {
+    position_ += velocity_ * (kSecondPerTick * 0.2f);
+  } else {
+    position_ += velocity_ * kSecondPerTick;
+  }
+
   bool should_die = false;
   if (game_core_->IsBlockedByObstacles(position_)) {
     should_die = true;
   }
 
-  auto &units = game_core_->GetUnits();
   for (auto &unit : units) {
     if (unit.first == unit_id_) {
       continue;
